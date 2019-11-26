@@ -28,6 +28,7 @@ public class FloatView {
         int xOffset;
         int yOffset;
         boolean mShow = true;
+        boolean mAutoEdge = true;
         Class[] mActivities;
         ViewStateListener mViewStateListener;
 
@@ -60,6 +61,11 @@ public class FloatView {
 
         public Builder setY(int y) {
             yOffset = y;
+            return this;
+        }
+
+        public Builder isAutoEdge(boolean autoEdge) {
+            mAutoEdge = autoEdge;
             return this;
         }
 

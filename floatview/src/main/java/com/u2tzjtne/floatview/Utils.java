@@ -1,9 +1,8 @@
 package com.u2tzjtne.floatview;
 
 import android.app.Activity;
-import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 /**
  * @author u2tzjtne
@@ -33,10 +32,11 @@ public class Utils {
      *
      * @return
      */
-    public static FrameLayout.LayoutParams geLayoutParams(int width, int height, int x, int y) {
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
-        params.gravity = Gravity.START;
-        params.setMargins(x, y, params.rightMargin, 56);
+    public static FrameLayout.LayoutParams geLayoutParams(int x, int y) {
+        FrameLayout.LayoutParams params =
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(x, y, params.rightMargin, params.bottomMargin);
         return params;
     }
 

@@ -15,7 +15,7 @@ import androidx.core.view.ViewCompat;
  */
 public class ViewManager {
 
-    private FloatMagnetView mFloatMagnetView;
+    private MagnetView mMagnetView;
     private FrameLayout mContainer;
     private FloatView.Builder mBuilder;
     private static final String TAG = "ViewManager";
@@ -29,13 +29,14 @@ public class ViewManager {
     }
 
     private void init() {
-        if (mFloatMagnetView != null) {
+        if (mMagnetView != null) {
             return;
         }
-        mFloatMagnetView = new FloatMagnetView(mBuilder.mApplication);
-        mFloatMagnetView.setIconImage(mBuilder.mIcon);
-        mFloatMagnetView.setLayoutParams(Utils.geLayoutParams(mBuilder.mWidth, mBuilder.mHeight, mBuilder.xOffset, mBuilder.yOffset));
-        mFloatMagnetView.setViewStateListener(mBuilder.mViewStateListener);
+        mMagnetView = new MagnetView(mBuilder.mApplication);
+        mMagnetView.setIconAutoEdge(mBuilder.mAutoEdge);
+        mMagnetView.setIconImage(mBuilder.mIcon);
+        mMagnetView.setIconLayoutParams(mBuilder.mWidth, mBuilder.mHeight, mBuilder.xOffset, mBuilder.yOffset);
+        mMagnetView.setViewStateListener(mBuilder.mViewStateListener);
         showFlag = mBuilder.mShow;
         mBuilder.mApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
@@ -100,15 +101,15 @@ public class ViewManager {
      */
     private void addView(Activity activity) {
         Log.d(TAG, "current activity: " + activity.getLocalClassName());
-        if (mFloatMagnetView != null) {
-            if (mContainer != null && mFloatMagnetView.getParent() == mContainer) {
-                mContainer.removeView(mFloatMagnetView);
+        if (mMagnetView != null) {
+            if (mContainer != null && mMagnetView.getParent() == mContainer) {
+                mContainer.removeView(mMagnetView);
             }
             mContainer = Utils.getActivityRoot(activity);
-            mFloatMagnetView.setActivity(activity);
-            mContainer.addView(mFloatMagnetView);
+            mMagnetView.setActivity(activity);
+            mContainer.addView(mMagnetView);
         } else {
-            Log.e(TAG, "FloatMagnetView is null");
+            Log.e(TAG, "MagnetView is null");
         }
     }
 
@@ -120,8 +121,8 @@ public class ViewManager {
      */
     private void removeView(Activity activity) {
         FrameLayout container = Utils.getActivityRoot(activity);
-        if (mFloatMagnetView != null && container != null && ViewCompat.isAttachedToWindow(mFloatMagnetView)) {
-            container.removeView(mFloatMagnetView);
+        if (mMagnetView != null && container != null && ViewCompat.isAttachedToWindow(mMagnetView)) {
+            container.removeView(mMagnetView);
         }
         if (mContainer == container) {
             mContainer = null;

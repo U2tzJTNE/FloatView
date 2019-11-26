@@ -10,13 +10,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.DrawableRes;
 
 /**
  * @author u2tzjtne
  */
-public class FloatMagnetView extends FrameLayout {
+public class MagnetView extends FrameLayout {
 
     public static final int MARGIN_EDGE = 13;
     private float mOriginalRawX;
@@ -31,8 +32,9 @@ public class FloatMagnetView extends FrameLayout {
     private int mScreenHeight;
 
     private ImageView mIcon;
+    private boolean mAutoEdge;
 
-    private static final String TAG = "FloatMagnetView";
+    private static final String TAG = "MagnetView";
 
     private Activity mActivity;
 
@@ -40,15 +42,15 @@ public class FloatMagnetView extends FrameLayout {
         this.mViewStateListener = viewStateListener;
     }
 
-    public FloatMagnetView(Context context) {
+    public MagnetView(Context context) {
         this(context, null);
     }
 
-    public FloatMagnetView(Context context, AttributeSet attrs) {
+    public MagnetView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public FloatMagnetView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MagnetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -56,12 +58,27 @@ public class FloatMagnetView extends FrameLayout {
     private void init(Context context) {
         View view = inflate(context, R.layout.float_view, this);
         mIcon = view.findViewById(R.id.icon);
-        mMoveAnimator = new MoveAnimator();
         setClickable(true);
     }
 
     public void setIconImage(@DrawableRes int resId) {
         mIcon.setImageResource(resId);
+    }
+
+    public void setIconAutoEdge(boolean autoEdge) {
+        mAutoEdge = autoEdge;
+        if (mAutoEdge) {
+            mMoveAnimator = new MoveAnimator();
+        }
+    }
+
+    public void setIconLayoutParams(int width, int height, int x, int y) {
+        //TODO 宽高 坐标校验
+        mIcon.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+        if (mAutoEdge) {
+            x = 0;
+        }
+        setLayoutParams(Utils.geLayoutParams(x, y));
     }
 
     public void setActivity(Activity activity) {
@@ -82,13 +99,17 @@ public class FloatMagnetView extends FrameLayout {
             case MotionEvent.ACTION_DOWN:
                 updateSize();
                 changeOriginalTouchParams(event);
-                mMoveAnimator.stop();
+                if (mAutoEdge) {
+                    mMoveAnimator.stop();
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 updateViewPosition(event);
                 break;
             case MotionEvent.ACTION_UP:
-                moveToEdge();
+                if (mAutoEdge) {
+                    moveToEdge();
+                }
                 if (isOnClickEvent()) {
                     dealClickEvent();
                 }
@@ -110,7 +131,15 @@ public class FloatMagnetView extends FrameLayout {
     }
 
     private void updateViewPosition(MotionEvent event) {
+        // 限制不可超出屏幕宽度
         float desX = mOriginalX + event.getRawX() - mOriginalRawX;
+        if (desX < 0) {
+            desX = 0;
+        }
+        if (desX > mScreenWidth) {
+            desX = mScreenWidth;
+        }
+
         // 限制不可超出屏幕高度
         float desY = mOriginalY + event.getRawY() - mOriginalRawY;
         if (desY < 0) {

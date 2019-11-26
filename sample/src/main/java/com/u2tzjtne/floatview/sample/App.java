@@ -3,7 +3,7 @@ package com.u2tzjtne.floatview.sample;
 import android.app.Application;
 import android.widget.Toast;
 
-import com.u2tzjtne.floatview.FloatMagnetView;
+import com.u2tzjtne.floatview.MagnetView;
 import com.u2tzjtne.floatview.FloatView;
 import com.u2tzjtne.floatview.ViewStateListener;
 
@@ -20,10 +20,11 @@ public class App extends Application {
                 .setHeight(300)
                 .setX(100)
                 .setY(100)
+                .isAutoEdge(true)
                 .setFilter(false, SecondActivity.class)
                 .setViewListener(new ViewStateListener() {
                     @Override
-                    public void onClick(FloatMagnetView view) {
+                    public void onClick(MagnetView view) {
                         Toast.makeText(App.this, "我被点击了: " + view.getActivity().getLocalClassName(), Toast.LENGTH_SHORT).show();
                     }
                 }).build();
