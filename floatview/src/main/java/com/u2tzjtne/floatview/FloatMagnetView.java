@@ -1,9 +1,11 @@
 package com.u2tzjtne.floatview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -27,9 +29,12 @@ public class FloatMagnetView extends FrameLayout {
     protected MoveAnimator mMoveAnimator;
     protected int mScreenWidth;
     private int mScreenHeight;
-    private int mStatusBarHeight;
 
     private ImageView mIcon;
+
+    private static final String TAG = "FloatMagnetView";
+
+    private Activity mActivity;
 
     public void setViewStateListener(ViewStateListener viewStateListener) {
         this.mViewStateListener = viewStateListener;
@@ -52,13 +57,20 @@ public class FloatMagnetView extends FrameLayout {
         View view = inflate(context, R.layout.float_view, this);
         mIcon = view.findViewById(R.id.icon);
         mMoveAnimator = new MoveAnimator();
-        mStatusBarHeight = Utils.getStatusBarHeight(getContext());
         setClickable(true);
-        updateSize();
     }
 
     public void setIconImage(@DrawableRes int resId) {
         mIcon.setImageResource(resId);
+    }
+
+    public void setActivity(Activity activity) {
+        Log.d(TAG, "start setActivity: " + activity.getLocalClassName());
+        this.mActivity = activity;
+    }
+
+    public Activity getActivity() {
+        return mActivity;
     }
 
     @Override
@@ -68,8 +80,8 @@ public class FloatMagnetView extends FrameLayout {
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                changeOriginalTouchParams(event);
                 updateSize();
+                changeOriginalTouchParams(event);
                 mMoveAnimator.stop();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -98,15 +110,16 @@ public class FloatMagnetView extends FrameLayout {
     }
 
     private void updateViewPosition(MotionEvent event) {
-        setX(mOriginalX + event.getRawX() - mOriginalRawX);
+        float desX = mOriginalX + event.getRawX() - mOriginalRawX;
         // 限制不可超出屏幕高度
         float desY = mOriginalY + event.getRawY() - mOriginalRawY;
-        if (desY < mStatusBarHeight) {
-            desY = mStatusBarHeight;
+        if (desY < 0) {
+            desY = 0;
         }
-        if (desY > mScreenHeight - getHeight()) {
-            desY = mScreenHeight - getHeight();
+        if (desY > mScreenHeight) {
+            desY = mScreenHeight;
         }
+        setX(desX);
         setY(desY);
     }
 
@@ -118,9 +131,10 @@ public class FloatMagnetView extends FrameLayout {
         mLastTouchDownTime = System.currentTimeMillis();
     }
 
-    protected void updateSize() {
-        mScreenWidth = (Utils.getScreenWidth(getContext()) - this.getWidth());
-        mScreenHeight = Utils.getScreenHeight(getContext());
+    public void updateSize() {
+        FrameLayout activityRoot = Utils.getActivityRoot(mActivity);
+        mScreenWidth = activityRoot.getWidth() - this.getWidth();
+        mScreenHeight = activityRoot.getHeight() - this.getWidth();
     }
 
     public void moveToEdge() {
@@ -131,12 +145,6 @@ public class FloatMagnetView extends FrameLayout {
     protected boolean isNearestLeft() {
         int middle = mScreenWidth / 2;
         return getX() < middle;
-    }
-
-    public void onRemove() {
-        if (mViewStateListener != null) {
-            mViewStateListener.onRemove(this);
-        }
     }
 
     protected class MoveAnimator implements Runnable {

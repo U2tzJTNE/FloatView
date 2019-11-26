@@ -3,6 +3,7 @@ package com.u2tzjtne.floatview;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -14,9 +15,10 @@ import androidx.core.view.ViewCompat;
  */
 public class ViewManager {
 
-    private FloatMagnetView mEnFloatingView;
+    private FloatMagnetView mFloatMagnetView;
     private FrameLayout mContainer;
     private FloatView.Builder mBuilder;
+    private static final String TAG = "ViewManager";
 
     private ViewManager() {
     }
@@ -27,14 +29,14 @@ public class ViewManager {
     }
 
     private void init() {
-        if (mEnFloatingView != null) {
+        if (mFloatMagnetView != null) {
             return;
         }
-        mEnFloatingView = new FloatMagnetView(mBuilder.mApplication);
-        mEnFloatingView.setIconImage(mBuilder.mIcon);
-        mEnFloatingView.setLayoutParams(Utils.geLayoutParams());
-        mEnFloatingView.setViewStateListener(mBuilder.mViewStateListener);
-
+        mFloatMagnetView = new FloatMagnetView(mBuilder.mApplication);
+        mFloatMagnetView.setIconImage(mBuilder.mIcon);
+        mFloatMagnetView.setLayoutParams(Utils.geLayoutParams(mBuilder.mWidth, mBuilder.mHeight, mBuilder.xOffset, mBuilder.yOffset));
+        mFloatMagnetView.setViewStateListener(mBuilder.mViewStateListener);
+        showFlag = mBuilder.mShow;
         mBuilder.mApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
@@ -43,7 +45,9 @@ public class ViewManager {
 
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
-                addView(activity);
+                if (needShow(activity)) {
+                    addView(activity);
+                }
             }
 
             @Override
@@ -73,6 +77,20 @@ public class ViewManager {
         });
     }
 
+    private boolean showFlag;
+
+    private boolean needShow(Activity activity) {
+        if (mBuilder.mActivities == null) {
+            return true;
+        }
+        for (Class a : mBuilder.mActivities) {
+            if (a.isInstance(activity)) {
+                return showFlag;
+            }
+        }
+        return !showFlag;
+    }
+
     /**
      * 1.Container赋值
      * 2.如果已经包含了悬浮窗，则移除
@@ -81,16 +99,16 @@ public class ViewManager {
      * @param activity 当前Activity
      */
     private void addView(Activity activity) {
-        FrameLayout container = Utils.getActivityRoot(activity);
-        if (container == null || mEnFloatingView == null) {
-            mContainer = container;
-        }
-        if (mEnFloatingView != null && mContainer != null && mEnFloatingView.getParent() == mContainer) {
-            mContainer.removeView(mEnFloatingView);
-        }
-        mContainer = container;
-        if (container != null) {
-            container.addView(mEnFloatingView);
+        Log.d(TAG, "current activity: " + activity.getLocalClassName());
+        if (mFloatMagnetView != null) {
+            if (mContainer != null && mFloatMagnetView.getParent() == mContainer) {
+                mContainer.removeView(mFloatMagnetView);
+            }
+            mContainer = Utils.getActivityRoot(activity);
+            mFloatMagnetView.setActivity(activity);
+            mContainer.addView(mFloatMagnetView);
+        } else {
+            Log.e(TAG, "FloatMagnetView is null");
         }
     }
 
@@ -102,8 +120,8 @@ public class ViewManager {
      */
     private void removeView(Activity activity) {
         FrameLayout container = Utils.getActivityRoot(activity);
-        if (mEnFloatingView != null && container != null && ViewCompat.isAttachedToWindow(mEnFloatingView)) {
-            container.removeView(mEnFloatingView);
+        if (mFloatMagnetView != null && container != null && ViewCompat.isAttachedToWindow(mFloatMagnetView)) {
+            container.removeView(mFloatMagnetView);
         }
         if (mContainer == container) {
             mContainer = null;

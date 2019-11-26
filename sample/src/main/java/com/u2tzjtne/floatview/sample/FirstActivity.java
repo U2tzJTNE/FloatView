@@ -20,6 +20,6 @@ public class FirstActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
         startActivity(intent);
+        finish();
     }
-
 }
