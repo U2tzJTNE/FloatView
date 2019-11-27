@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 /**
  * @author u2tzjtne
  */
-public class Utils {
+class Utils {
 
     /**
      * 获取Activity 根部局
@@ -15,7 +15,7 @@ public class Utils {
      * @param activity activity
      * @return 根部局
      */
-    public static FrameLayout getActivityRoot(Activity activity) {
+    static FrameLayout getActivityRoot(Activity activity) {
         if (activity == null) {
             return null;
         }
@@ -30,9 +30,9 @@ public class Utils {
     /**
      * 获取布局参数
      *
-     * @return
+     * @return 布局参数
      */
-    public static FrameLayout.LayoutParams geLayoutParams(int x, int y) {
+    static FrameLayout.LayoutParams geLayoutParams(int x, int y) {
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);

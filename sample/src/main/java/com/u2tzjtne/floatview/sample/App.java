@@ -16,12 +16,13 @@ public class App extends Application {
         super.onCreate();
         FloatView.with(this)
                 .setIcon(R.drawable.ic_float_view)
-                .setWidth(300)
-                .setHeight(300)
+                .setWidth(200)
+                .setHeight(200)
                 .setX(100)
                 .setY(100)
                 .isAutoEdge(true)
-                .setFilter(false, SecondActivity.class)
+                .setEdgeMargin(20)
+                .setFilter(true, SecondActivity.class)
                 .setViewListener(new ViewStateListener() {
                     @Override
                     public void onClick(MagnetView view) {

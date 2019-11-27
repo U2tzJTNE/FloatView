@@ -27,6 +27,7 @@ public class FloatView {
         int mHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
         int xOffset;
         int yOffset;
+        int mEdgeMargin = 13;
         boolean mShow = true;
         boolean mAutoEdge = true;
         Class[] mActivities;
@@ -61,6 +62,11 @@ public class FloatView {
 
         public Builder setY(int y) {
             yOffset = y;
+            return this;
+        }
+
+        public Builder setEdgeMargin(int edgeMargin) {
+            mEdgeMargin = edgeMargin;
             return this;
         }
 

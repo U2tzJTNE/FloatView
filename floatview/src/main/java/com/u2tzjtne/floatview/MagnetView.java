@@ -12,35 +12,29 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.DrawableRes;
-
 /**
  * @author u2tzjtne
  */
 public class MagnetView extends FrameLayout {
 
-    public static final int MARGIN_EDGE = 13;
+    private static final String TAG = "MagnetView";
+    /**
+     * 左右边距
+     */
+    private int mEdgeMargin = 13;
+    private static final int TOUCH_TIME_THRESHOLD = 150;
+    private long mLastTouchDownTime;
+    private MoveAnimator mMoveAnimator;
+    private ViewStateListener mViewStateListener;
+    private int mScreenWidth;
+    private int mScreenHeight;
     private float mOriginalRawX;
     private float mOriginalRawY;
     private float mOriginalX;
     private float mOriginalY;
-    private ViewStateListener mViewStateListener;
-    private static final int TOUCH_TIME_THRESHOLD = 150;
-    private long mLastTouchDownTime;
-    protected MoveAnimator mMoveAnimator;
-    protected int mScreenWidth;
-    private int mScreenHeight;
-
     private ImageView mIcon;
     private boolean mAutoEdge;
-
-    private static final String TAG = "MagnetView";
-
     private Activity mActivity;
-
-    public void setViewStateListener(ViewStateListener viewStateListener) {
-        this.mViewStateListener = viewStateListener;
-    }
 
     public MagnetView(Context context) {
         this(context, null);
@@ -52,20 +46,23 @@ public class MagnetView extends FrameLayout {
 
     public MagnetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
-    private void init(Context context) {
-        View view = inflate(context, R.layout.float_view, this);
-        mIcon = view.findViewById(R.id.icon);
+    public void init(FloatView.Builder builder) {
         setClickable(true);
+        View view = inflate(builder.mApplication, R.layout.float_view, this);
+        mIcon = view.findViewById(R.id.icon);
+        mIcon.setImageResource(builder.mIcon);
+        setAutoEdge(builder.mAutoEdge);
+        mEdgeMargin = builder.mEdgeMargin;
+        mViewStateListener = builder.mViewStateListener;
+        if (mEdgeMargin < 0) {
+            mEdgeMargin = 0;
+        }
+        setIconLayoutParams(builder.mWidth, builder.mHeight, builder.xOffset, builder.yOffset);
     }
 
-    public void setIconImage(@DrawableRes int resId) {
-        mIcon.setImageResource(resId);
-    }
-
-    public void setIconAutoEdge(boolean autoEdge) {
+    public void setAutoEdge(boolean autoEdge) {
         mAutoEdge = autoEdge;
         if (mAutoEdge) {
             mMoveAnimator = new MoveAnimator();
@@ -73,16 +70,16 @@ public class MagnetView extends FrameLayout {
     }
 
     public void setIconLayoutParams(int width, int height, int x, int y) {
-        //TODO 宽高 坐标校验
+        Log.d(TAG, "mScreenWidth: " + mScreenWidth);
+        Log.d(TAG, "mScreenHeight: " + mScreenHeight);
         mIcon.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
         if (mAutoEdge) {
-            x = 0;
+            x = mEdgeMargin;
         }
         setLayoutParams(Utils.geLayoutParams(x, y));
     }
 
     public void setActivity(Activity activity) {
-        Log.d(TAG, "start setActivity: " + activity.getLocalClassName());
         this.mActivity = activity;
     }
 
@@ -120,12 +117,20 @@ public class MagnetView extends FrameLayout {
         return true;
     }
 
+    /**
+     * 回调点击事件
+     */
     protected void dealClickEvent() {
         if (mViewStateListener != null) {
             mViewStateListener.onClick(this);
         }
     }
 
+    /**
+     * 判断是否是点击事件
+     *
+     * @return
+     */
     protected boolean isOnClickEvent() {
         return System.currentTimeMillis() - mLastTouchDownTime < TOUCH_TIME_THRESHOLD;
     }
@@ -139,7 +144,6 @@ public class MagnetView extends FrameLayout {
         if (desX > mScreenWidth) {
             desX = mScreenWidth;
         }
-
         // 限制不可超出屏幕高度
         float desY = mOriginalY + event.getRawY() - mOriginalRawY;
         if (desY < 0) {
@@ -167,7 +171,7 @@ public class MagnetView extends FrameLayout {
     }
 
     public void moveToEdge() {
-        float moveDistance = isNearestLeft() ? MARGIN_EDGE : mScreenWidth - MARGIN_EDGE;
+        float moveDistance = isNearestLeft() ? mEdgeMargin : mScreenWidth - mEdgeMargin;
         mMoveAnimator.start(moveDistance, getY());
     }
 

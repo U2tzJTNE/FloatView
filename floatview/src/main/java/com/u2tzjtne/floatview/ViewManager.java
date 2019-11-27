@@ -15,10 +15,11 @@ import androidx.core.view.ViewCompat;
  */
 public class ViewManager {
 
+    private static final String TAG = "ViewManager";
     private MagnetView mMagnetView;
     private FrameLayout mContainer;
     private FloatView.Builder mBuilder;
-    private static final String TAG = "ViewManager";
+    private boolean showFlag;
 
     private ViewManager() {
     }
@@ -32,12 +33,9 @@ public class ViewManager {
         if (mMagnetView != null) {
             return;
         }
-        mMagnetView = new MagnetView(mBuilder.mApplication);
-        mMagnetView.setIconAutoEdge(mBuilder.mAutoEdge);
-        mMagnetView.setIconImage(mBuilder.mIcon);
-        mMagnetView.setIconLayoutParams(mBuilder.mWidth, mBuilder.mHeight, mBuilder.xOffset, mBuilder.yOffset);
-        mMagnetView.setViewStateListener(mBuilder.mViewStateListener);
         showFlag = mBuilder.mShow;
+        mMagnetView = new MagnetView(mBuilder.mApplication);
+        mMagnetView.init(mBuilder);
         mBuilder.mApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
@@ -77,8 +75,6 @@ public class ViewManager {
             }
         });
     }
-
-    private boolean showFlag;
 
     private boolean needShow(Activity activity) {
         if (mBuilder.mActivities == null) {
