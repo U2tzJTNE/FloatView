@@ -13,11 +13,9 @@ import androidx.annotation.NonNull;
 public class FloatView {
 
 
-    private static Builder mBuilder = null;
-
     @MainThread
     public static Builder with(@NonNull Application application) {
-        return mBuilder = new Builder(application);
+        return new Builder(application);
     }
 
     public static class Builder {
@@ -30,11 +28,9 @@ public class FloatView {
         int mEdgeMargin = 13;
         boolean mShow = true;
         boolean mAutoEdge = true;
+        Unit mUnit = Unit.DP;
         Class[] mActivities;
         ViewStateListener mViewStateListener;
-
-        private Builder() {
-        }
 
         Builder(Application application) {
             mApplication = application;
@@ -45,28 +41,25 @@ public class FloatView {
             return this;
         }
 
-        public Builder setWidth(int width) {
+        public Builder setSize(int width, int height) {
             mWidth = width;
-            return this;
-        }
-
-        public Builder setHeight(int height) {
             mHeight = height;
             return this;
         }
 
-        public Builder setX(int x) {
+        public Builder setDefaultPosition(int x, int y) {
             xOffset = x;
-            return this;
-        }
-
-        public Builder setY(int y) {
             yOffset = y;
             return this;
         }
 
         public Builder setEdgeMargin(int edgeMargin) {
             mEdgeMargin = edgeMargin;
+            return this;
+        }
+
+        public Builder setUnit(Unit unit) {
+            mUnit = unit;
             return this;
         }
 
@@ -93,6 +86,13 @@ public class FloatView {
         }
 
         public void build() {
+            if (mUnit == Unit.DP) {
+                mHeight = Utils.dp2px(mHeight);
+                mWidth = Utils.dp2px(mWidth);
+                mEdgeMargin = Utils.dp2px(mEdgeMargin);
+                xOffset = Utils.dp2px(xOffset);
+                yOffset = Utils.dp2px(yOffset);
+            }
             new ViewManager(this);
         }
     }

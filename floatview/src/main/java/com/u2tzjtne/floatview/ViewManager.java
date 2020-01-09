@@ -21,9 +21,6 @@ public class ViewManager {
     private FloatView.Builder mBuilder;
     private boolean showFlag;
 
-    private ViewManager() {
-    }
-
     ViewManager(FloatView.Builder builder) {
         mBuilder = builder;
         init();

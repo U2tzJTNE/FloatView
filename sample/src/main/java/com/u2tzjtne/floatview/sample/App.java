@@ -1,10 +1,11 @@
 package com.u2tzjtne.floatview.sample;
 
+import android.app.Activity;
 import android.app.Application;
 import android.widget.Toast;
 
-import com.u2tzjtne.floatview.MagnetView;
 import com.u2tzjtne.floatview.FloatView;
+import com.u2tzjtne.floatview.Unit;
 import com.u2tzjtne.floatview.ViewStateListener;
 
 /**
@@ -16,17 +17,17 @@ public class App extends Application {
         super.onCreate();
         FloatView.with(this)
                 .setIcon(R.drawable.ic_float_view)
-                .setWidth(200)
-                .setHeight(200)
-                .setX(100)
-                .setY(100)
+                .setSize(50, 50)
+                .setDefaultPosition(0, 100)
+                .setEdgeMargin(5)
+                .setUnit(Unit.DP)
                 .isAutoEdge(true)
-                .setEdgeMargin(20)
                 .setFilter(true, SecondActivity.class)
                 .setViewListener(new ViewStateListener() {
                     @Override
-                    public void onClick(MagnetView view) {
-                        Toast.makeText(App.this, "我被点击了: " + view.getActivity().getLocalClassName(), Toast.LENGTH_SHORT).show();
+                    public void onClick(Activity activity) {
+                        Toast.makeText(App.this, "我被点击了: "
+                                + activity.getLocalClassName(), Toast.LENGTH_SHORT).show();
                     }
                 }).build();
     }

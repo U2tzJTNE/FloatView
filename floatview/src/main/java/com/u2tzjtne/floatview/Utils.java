@@ -1,6 +1,7 @@
 package com.u2tzjtne.floatview;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -40,4 +41,13 @@ class Utils {
         return params;
     }
 
+    /**
+     * dp转px
+     *
+     * @return 转换后的数值
+     */
+    static int dp2px(final float dpValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
 }

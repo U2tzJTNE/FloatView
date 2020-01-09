@@ -1,5 +1,6 @@
 package com.u2tzjtne.floatview;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -87,6 +88,7 @@ public class MagnetView extends FrameLayout {
         return mActivity;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event == null) {
@@ -122,7 +124,7 @@ public class MagnetView extends FrameLayout {
      */
     protected void dealClickEvent() {
         if (mViewStateListener != null) {
-            mViewStateListener.onClick(this);
+            mViewStateListener.onClick(getActivity());
         }
     }
 
