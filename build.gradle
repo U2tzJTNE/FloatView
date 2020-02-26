@@ -5,10 +5,7 @@ buildscript {
     }
     dependencies {
         //Android Gradle 插件
-        classpath 'com.android.tools.build:gradle:3.5.3'
-        //bintray 插件
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.android.tools.build:gradle:3.6.0'
     }
 }
 

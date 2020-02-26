@@ -129,9 +129,8 @@ public class MagnetView extends FrameLayout {
     }
 
     /**
-     * 判断是否是点击事件
      *
-     * @return
+     * @return 是否是点击事件
      */
     protected boolean isOnClickEvent() {
         return System.currentTimeMillis() - mLastTouchDownTime < TOUCH_TIME_THRESHOLD;
