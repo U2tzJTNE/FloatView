@@ -21,7 +21,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'com.github.U2tzJTNE:FloatView:1.0'
+    implementation 'com.github.U2tzJTNE:FloatView:Tag'
 }
 ```
 
